@@ -1,0 +1,18 @@
+# Personal bill HTML files
+ConEd-Bill-*.html
+
+# Generated data (users regenerate from their own bills)
+bills_data.json
+bills_data.csv
+bills_weather_data.json
+usage_dashboard.html
+
+# Node
+node_modules/
+
+# Dev/debug utilities
+debug_regex.js
+generate_dashboard.js
+
+# OS
+.DS_Store

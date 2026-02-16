@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>ConEd Bill Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0f1117;
+            color: #e2e8f0;
+            min-height: 100vh
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 32px 20px 24px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06)
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -0.5px
+        }
+
+        .page-header p {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-top: 4px
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0 24px;
+            flex-wrap: wrap
+        }
+
+        .controls select {
+            background: #1e2235;
+            color: #e2e8f0;
+            border: 1px solid #2d3348;
+            border-radius: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            min-width: 140px
+        }
+
+        .controls select:hover {
+            border-color: #4a90d9
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 28px
+        }
+
+        .summary-item {
+            background: linear-gradient(135deg, #1e2235, #252a3e);
+            border: 1px solid #2d3348;
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s
+        }
+
+        .summary-item:hover {
+            transform: translateY(-2px);
+            border-color: #4a90d9
+        }
+
+        .summary-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+            white-space: nowrap
+        }
+
+        .summary-label {
+            font-size: 11px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 500
+        }
+
+        .summary-sub {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #e2e8f0;
+            margin: 28px 0 16px;
+            border-left: 3px solid #4a90d9;
+            padding-left: 12px
+        }
+
+        .charts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 32px
+        }
+
+        .chart-wrapper {
+            background: #1e2235;
+            border: 1px solid #2d3348;
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 280px
+        }
+
+        .chart-wrapper.full-width {
+            grid-column: 1/-1
+        }
+
+        @media(max-width:900px) {
+            .charts {
+                grid-template-columns: 1fr
+            }
+
+            .chart-wrapper {
+                min-height: 320px;
+                height: 320px;
+                padding: 12px 8px;
+            }
+
+            .chart-wrapper canvas {
+                max-height: 100%;
+            }
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #4a90d9, #357abd);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s
+        }
+
+        .btn-export:hover {
+            opacity: 0.85
+        }
+
+        .table-scroll {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid #2d3348
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: #1e2235
+        }
+
+        th,
+        td {
+            padding: 10px 12px;
+            text-align: right;
+            border-bottom: 1px solid #2d3348
+        }
+
+        th {
+            background: #252a3e;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            position: sticky;
+            top: 0
+        }
+
+        th:hover {
+            color: #e2e8f0
+        }
+
+        th .sort-arrow {
+            margin-left: 4px;
+            font-size: 10px;
+            opacity: 0.5
+        }
+
+        th.sorted .sort-arrow {
+            opacity: 1;
+            color: #4a90d9
+        }
+
+        td:first-child,
+        th:first-child {
+            text-align: left
+        }
+
+        tr:hover td {
+            background: #252a3e
+        }
+
+        .heat-low {
+            color: #4ade80
+        }
+
+        .heat-mid {
+            color: #facc15
+        }
+
+        .heat-high {
+            color: #f87171
+        }
+
+        .yoy-up {
+            color: #f87171
+        }
+
+        .yoy-down {
+            color: #4ade80
+        }
+
+        .yoy-flat {
+            color: #94a3b8
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-header">
+        <h1>&#9889; ConEd Usage &amp; Cost Dashboard</h1>
+        <p>Electricity &amp; gas analysis with weather correlation</p>
+    </div>
+    <div class='container'>
+        <div class="controls">
+            <select id="yearFilter">
+                <option value="all">All Years</option>
+            </select>
+            <select id="monthFilter">
+                <option value="all">All Months</option>
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
+            </select>
+        </div>
+        <div class='summary' id='summary'></div>
+        <div class="section-title">Usage &amp; Cost Trends</div>
+        <div class='charts'>
+            <div class="chart-wrapper"><canvas id='electricChart'></canvas></div>
+            <div class="chart-wrapper"><canvas id='gasChart'></canvas></div>
+            <div class="chart-wrapper"><canvas id='costBreakdownChart'></canvas></div>
+            <div class="chart-wrapper"><canvas id='dailyNormChart'></canvas></div>
+        </div>
+        <div class="section-title">Deeper Analysis</div>
+        <div class='charts'>
+            <div class="chart-wrapper"><canvas id='tempVsUsageChart'></canvas></div>
+            <div class="chart-wrapper"><canvas id='rateChart'></canvas></div>
+            <div class="chart-wrapper"><canvas id='scatterChart'></canvas></div>
+            <div class="chart-wrapper"><canvas id='seasonalChart'></canvas></div>
+            <div class="chart-wrapper full-width"><canvas id='supplyDeliveryChart'></canvas></div>
+            <div class="chart-wrapper full-width"><canvas id='yoyChart'></canvas></div>
+            <div class="chart-wrapper full-width"><canvas id='rollingChart'></canvas></div>
+        </div>
+        <div class="section-title">Billing Detail</div>
+        <div class="table-header">
+            <span style="color:#94a3b8;font-size:13px" id="tableCount"></span>
+            <button class="btn-export" onclick="exportCSV()">&#11015; Export CSV</button>
+        </div>
+        <div class='table-scroll'>
+            <table id='dataTable'>
+                <thead>
+                    <tr>
+                        <th data-col="date">Date <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="avgTemp">Temp &#176;F <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="electricUsage">kWh <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="electricCost">Elec $ <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="gasUsage">Therms <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="gasCost">Gas $ <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="totalCost">Total $ <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="supplyTotal">Supply $ <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="deliveryTotal">Delivery $ <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="daysCovered">Days <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="kwhPerDay">kWh/Day <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="costPerDay">$/Day <span class="sort-arrow">&#9650;&#9660;</span></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
