@@ -28,6 +28,7 @@ ConEd-Bill-YYYY-MM.html
 For example: `ConEd-Bill-2024-01.html`, `ConEd-Bill-2024-02.html`, etc.
 
 > **Tip:** Download your bills from ConEd's website — go to *My Account → Billing & Payments → Bill History*, and save/download each bill as HTML.
+> **Tip:** If you can only download the PDF, install pdftohtml command line tool to convert PDF to HTML
 
 ### 3. Run the pipeline
 
