@@ -50,7 +50,7 @@ Open `usage_dashboard.html` in any web browser.
 
 ### Weather Location
 
-By default, weather data is fetched for **Long Island City, NY** (zip 11101). If you're in a different part of the ConEd service area, edit the coordinates in `enrich_with_weather.js`:
+Edit the coordinates in `enrich_with_weather.js` to match your location/zip code:
 
 ```javascript
 const LAT = 40.7536;  // Your latitude
