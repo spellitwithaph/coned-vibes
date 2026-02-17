@@ -1,5 +1,6 @@
 # Personal bill HTML files
-billsConEd-Bill-*.html
+bills/ConEd-Bill-*.html
+ConEd-Bill-*.html
 
 # Generated data (users regenerate from their own bills)
 bills_data.json
