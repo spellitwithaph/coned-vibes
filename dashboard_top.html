@@ -101,21 +101,9 @@
 
         .summary {
             display: grid;
-            grid-template-columns: repeat(8, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 12px;
             margin-bottom: 28px
-        }
-
-        @media(max-width:1200px) {
-            .summary {
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-            }
-        }
-
-        @media(max-width:700px) {
-            .summary {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
         }
 
         .summary-item {
@@ -363,7 +351,7 @@
         </div>
         <div class="section-title">Long Term</div>
         <div class='charts'>
-            <div class="chart-wrapper"><canvas id='seasonalChart'></canvas></div>
+            <div class="chart-wrapper full-width"><canvas id='seasonalChart'></canvas></div>
             <div class="chart-wrapper full-width"><canvas id='supplyDeliveryChart'></canvas></div>
             <div class="chart-wrapper full-width"><canvas id='yoyChart'></canvas></div>
             <div class="chart-wrapper full-width"><canvas id='rollingChart'></canvas></div>

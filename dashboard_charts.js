@@ -56,7 +56,7 @@ function enrichBill(d) {
     const cdd = Math.max(0, d.avgTemp - DEGREE_DAY_BASE) * d.daysCovered;
     const totalDegreeDays = hdd + cdd;
     const electricIntensity = safeDiv(d.electricUsage, totalDegreeDays, 3);
-    const gasIntensity = safeDiv(d.gasUsage, hdd, 3);
+    const gasIntensity = hdd > 0 ? safeDiv(d.gasUsage, hdd, 3) : 0;
 
     return {
         ...d,
@@ -111,6 +111,11 @@ function updateSummary(data, yearVal) {
     const highest = withTotals.reduce((a, b) => a.selectedCost > b.selectedCost ? a : b);
     const lowest = withTotals.reduce((a, b) => a.selectedCost < b.selectedCost ? a : b);
 
+    const supplyData = data.filter(d => d.electricSupply != null || d.gasSupply != null);
+    const totalSupply = supplyData.reduce((a, d) => a + (d.electricSupply || 0) + (d.gasSupply || 0), 0);
+    const totalDelivery = supplyData.reduce((a, d) => a + (d.electricDelivery || 0) + (d.gasDelivery || 0), 0);
+    const supplyDeliveryTotal = totalSupply + totalDelivery;
+
     const intensityValues = data.map(d => {
         if (currentFuel === 'electric') return d.electricIntensity;
         if (currentFuel === 'gas') return d.gasIntensity;
@@ -134,6 +139,12 @@ function updateSummary(data, yearVal) {
         }
     }
 
+    let sdHtml = '';
+    if (supplyDeliveryTotal > 0) {
+        const supPct = totalSupply / supplyDeliveryTotal;
+        sdHtml = `<div class='summary-item'><div class='summary-value' style='font-size:18px'>${pct(supPct)} / ${pct(1 - supPct)}</div><div class='summary-label'>Supply / Delivery</div><div class='summary-sub'>${supplyData.length} bills w/ data</div></div>`;
+    }
+
     const selectedLabel = currentFuel === 'both' ? 'Total Spent' : `${currentFuel[0].toUpperCase()}${currentFuel.slice(1)} Spent`;
     const intensityLabel = currentFuel === 'electric' ? 'Avg kWh/DD' : currentFuel === 'gas' ? 'Avg Therm/HDD' : 'Avg Usage/DD';
 
@@ -143,6 +154,7 @@ function updateSummary(data, yearVal) {
         <div class='summary-item'><div class='summary-value'>${fmt$(avgPerDay)}</div><div class='summary-label'>Avg $/Day</div></div>
         <div class='summary-item'><div class='summary-value'>${data.length}</div><div class='summary-label'>Bills</div></div>
         <div class='summary-item'><div class='summary-value'>${avgIntensity == null ? '—' : avgIntensity.toFixed(3)}</div><div class='summary-label'>${intensityLabel}</div></div>
+        ${sdHtml}
         <div class='summary-item'><div class='summary-value'>${fmt$(highest.selectedCost)}</div><div class='summary-label'>Highest Bill</div><div class='summary-sub'>${highest.date}</div></div>
         <div class='summary-item'><div class='summary-value'>${fmt$(lowest.selectedCost)}</div><div class='summary-label'>Lowest Bill</div><div class='summary-sub'>${lowest.date}</div></div>
         ${yoyHtml}

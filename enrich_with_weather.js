@@ -116,8 +116,8 @@ async function enrich() {
                 bill.hdd = parseFloat(hdd.toFixed(1));
                 bill.cdd = parseFloat(cdd.toFixed(1));
                 bill.totalDegreeDays = parseFloat(totalDegreeDays.toFixed(1));
-                bill.electricIntensity = totalDegreeDays > 0 ? parseFloat((bill.electricUsage / totalDegreeDays).toFixed(3)) : null;
-                bill.gasIntensity = hdd > 0 ? parseFloat((bill.gasUsage / hdd).toFixed(3)) : null;
+                bill.electricIntensity = totalDegreeDays > 0 ? parseFloat((bill.electricUsage / totalDegreeDays).toFixed(3)) : 0;
+                bill.gasIntensity = hdd > 0 ? parseFloat((bill.gasUsage / hdd).toFixed(3)) : 0;
             } else {
                 bill.hdd = null;
                 bill.cdd = null;
