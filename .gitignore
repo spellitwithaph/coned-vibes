@@ -16,3 +16,6 @@ generate_dashboard.js
 
 # OS
 .DS_Store
+
+# Other
+coned.code-workspace
