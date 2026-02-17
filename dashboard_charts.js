@@ -309,12 +309,13 @@ function updateAnalysisCharts(data, yearVal) {
 
     // 8.5. Supply vs Delivery Trend
     const sdData = data.filter(d => d.electricSupply != null || d.gasSupply != null);
-    if (sdData.length > 1) {
+    const supplyDeliveryCanvas = document.getElementById('supplyDeliveryChart');
+    if (sdData.length > 1 && supplyDeliveryCanvas) {
         const sdLabels = sdData.map(d => d.date);
         const supplyLine = sdData.map(d => +((d.electricSupply || 0) + (d.gasSupply || 0)).toFixed(2));
         const deliveryLine = sdData.map(d => +((d.electricDelivery || 0) + (d.gasDelivery || 0)).toFixed(2));
         destroyChart('supplyDelivery');
-        charts.supplyDelivery = new Chart(document.getElementById('supplyDeliveryChart'), {
+        charts.supplyDelivery = new Chart(supplyDeliveryCanvas, {
             type: 'line', data: {
                 labels: sdLabels, datasets: [
                     { label: 'Total Supply $', data: supplyLine, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.08)', tension: 0.3, fill: true, pointRadius: getPointRadius(), borderWidth: 2.5 },
@@ -326,6 +327,8 @@ function updateAnalysisCharts(data, yearVal) {
                 scales: { x: { ticks: { maxRotation: 90, maxTicksLimit: getMaxTicks(), font: getTickFont() } }, y: { title: { display: true, text: 'USD ($)' }, ticks: { font: getTickFont() } } }
             }
         });
+    } else {
+        destroyChart('supplyDelivery');
     }
 
     // 9. YoY Comparison
