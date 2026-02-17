@@ -9,4 +9,5 @@ const top = fs.readFileSync('dashboard_top.html', 'utf8');
 const full = top + '\n    <script>const allData = ' + dataStr + ';<\/script>\n    <script src="dashboard_charts.js"><\/script>\n</body>\n</html>';
 
 fs.writeFileSync('usage_dashboard.html', full);
-console.log('Done! Size:', full.length);
+fs.writeFileSync('index.html', full);
+console.log('Done! Wrote usage_dashboard.html and index.html. Size:', full.length);

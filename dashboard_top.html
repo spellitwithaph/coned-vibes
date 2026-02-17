@@ -71,6 +71,34 @@
             border-color: #4a90d9
         }
 
+        .fuel-toggle {
+            display: inline-flex;
+            background: #1a1f31;
+            border: 1px solid #2d3348;
+            border-radius: 10px;
+            padding: 4px;
+            gap: 4px
+        }
+
+        .fuel-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            color: #94a3b8;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s ease
+        }
+
+        .fuel-btn.active,
+        .fuel-btn:hover {
+            background: #334155;
+            color: #f8fafc
+        }
+
         .summary {
             display: grid;
             grid-template-columns: repeat(8, minmax(0, 1fr));
@@ -152,6 +180,10 @@
 
         .chart-wrapper.full-width {
             grid-column: 1/-1
+        }
+
+        .chart-wrapper.chart-hidden {
+            display: none
         }
 
         @media(max-width:900px) {
@@ -305,20 +337,32 @@
                 <option value="10">November</option>
                 <option value="11">December</option>
             </select>
+            <div class="fuel-toggle" id="fuelToggle">
+                <button type="button" class="fuel-btn active" data-fuel="both">Both</button>
+                <button type="button" class="fuel-btn" data-fuel="electric">Electric</button>
+                <button type="button" class="fuel-btn" data-fuel="gas">Gas</button>
+            </div>
         </div>
         <div class='summary' id='summary'></div>
-        <div class="section-title">Usage &amp; Cost Trends</div>
+        <div class="section-title">At a Glance</div>
         <div class='charts'>
-            <div class="chart-wrapper"><canvas id='electricChart'></canvas></div>
-            <div class="chart-wrapper"><canvas id='gasChart'></canvas></div>
+            <div class="chart-wrapper full-width"><canvas id='cumulativeSpendChart'></canvas></div>
+        </div>
+        <div class="section-title">Trends &amp; Efficiency</div>
+        <div class='charts'>
+            <div class="chart-wrapper full-width"><canvas id='efficiencyChart'></canvas></div>
+            <div class="chart-wrapper full-width"><canvas id='rateChart'></canvas></div>
+        </div>
+        <div class="section-title">Detailed Breakdown</div>
+        <div class='charts'>
+            <div class="chart-wrapper" data-fuel-wrapper="electric"><canvas id='electricChart'></canvas></div>
+            <div class="chart-wrapper" data-fuel-wrapper="gas"><canvas id='gasChart'></canvas></div>
             <div class="chart-wrapper"><canvas id='costBreakdownChart'></canvas></div>
             <div class="chart-wrapper"><canvas id='dailyNormChart'></canvas></div>
+            <div class="chart-wrapper full-width"><canvas id='scatterChart'></canvas></div>
         </div>
-        <div class="section-title">Deeper Analysis</div>
+        <div class="section-title">Long Term</div>
         <div class='charts'>
-            <div class="chart-wrapper"><canvas id='tempVsUsageChart'></canvas></div>
-            <div class="chart-wrapper"><canvas id='rateChart'></canvas></div>
-            <div class="chart-wrapper"><canvas id='scatterChart'></canvas></div>
             <div class="chart-wrapper"><canvas id='seasonalChart'></canvas></div>
             <div class="chart-wrapper full-width"><canvas id='supplyDeliveryChart'></canvas></div>
             <div class="chart-wrapper full-width"><canvas id='yoyChart'></canvas></div>
@@ -343,7 +387,11 @@
                         <th data-col="supplyTotal">Supply $ <span class="sort-arrow">&#9650;&#9660;</span></th>
                         <th data-col="deliveryTotal">Delivery $ <span class="sort-arrow">&#9650;&#9660;</span></th>
                         <th data-col="daysCovered">Days <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="hdd">HDD <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="cdd">CDD <span class="sort-arrow">&#9650;&#9660;</span></th>
                         <th data-col="kwhPerDay">kWh/Day <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="kwhPerDegreeDay">kWh/DD <span class="sort-arrow">&#9650;&#9660;</span></th>
+                        <th data-col="thermsPerHdd">Therm/HDD <span class="sort-arrow">&#9650;&#9660;</span></th>
                         <th data-col="costPerDay">$/Day <span class="sort-arrow">&#9650;&#9660;</span></th>
                     </tr>
                 </thead>

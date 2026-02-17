@@ -7,6 +7,7 @@ const bills = JSON.parse(fs.readFileSync('bills_data.json', 'utf8'));
 // Zip 11101 Coordinates (Long Island City)
 const LAT = 40.7536;
 const LON = -73.9432;
+const DEGREE_DAY_BASE = 65;
 
 // Helper to make HTTPS request
 function fetchWeather(startDate, endDate) {
@@ -108,6 +109,22 @@ async function enrich() {
 
             bill.avgTemp = count > 0 ? parseFloat((sum / count).toFixed(1)) : null;
             bill.daysCovered = count;
+            if (bill.avgTemp != null && count > 0) {
+                const hdd = Math.max(0, DEGREE_DAY_BASE - bill.avgTemp) * count;
+                const cdd = Math.max(0, bill.avgTemp - DEGREE_DAY_BASE) * count;
+                const totalDegreeDays = hdd + cdd;
+                bill.hdd = parseFloat(hdd.toFixed(1));
+                bill.cdd = parseFloat(cdd.toFixed(1));
+                bill.totalDegreeDays = parseFloat(totalDegreeDays.toFixed(1));
+                bill.electricIntensity = totalDegreeDays > 0 ? parseFloat((bill.electricUsage / totalDegreeDays).toFixed(3)) : null;
+                bill.gasIntensity = hdd > 0 ? parseFloat((bill.gasUsage / hdd).toFixed(3)) : null;
+            } else {
+                bill.hdd = null;
+                bill.cdd = null;
+                bill.totalDegreeDays = null;
+                bill.electricIntensity = null;
+                bill.gasIntensity = null;
+            }
             enrichedBills.push(bill);
         }
 
