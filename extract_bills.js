@@ -3,7 +3,7 @@ const path = require('path');
 const cheerio = require('cheerio');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 
-const htmlDir = __dirname;
+const htmlDir = path.join(__dirname, 'bills');
 const outputJson = 'bills_data.json';
 const outputCsv = 'bills_data.csv';
 

@@ -19,13 +19,21 @@ npm install
 
 ### 2. Add your ConEd bill HTML files
 
-Place your downloaded ConEd bill HTML files in this directory. Name them using this format:
+Place your downloaded ConEd bill HTML files in the `bills/` directory. Name them using this format:
 
 ```
 ConEd-Bill-YYYY-MM.html
 ```
 
 For example: `ConEd-Bill-2024-01.html`, `ConEd-Bill-2024-02.html`, etc.
+
+Directory structure:
+
+```text
+coned/
+  bills/
+    ConEd-Bill-YYYY-MM.html
+```
 
 > **Tip:** Download your bills from ConEd's website — go to *My Account → Billing & Payments → Bill History*, and save/download each bill as HTML.
 
@@ -38,13 +46,13 @@ bash update_dashboard.sh
 ```
 
 This runs three steps automatically:
-1. **Extract** — Parses all `ConEd-Bill-*.html` files and extracts usage/cost data → `bills_data.json`
+1. **Extract** — Parses all `bills/ConEd-Bill-*.html` files and extracts usage/cost data → `bills_data.json`
 2. **Enrich** — Fetches historical weather data from [Open-Meteo](https://open-meteo.com/) for the NYC area → `bills_weather_data.json`
-3. **Build** — Assembles the final dashboard → `usage_dashboard.html`
+3. **Build** — Assembles the final dashboard → `index.html` (and also writes `usage_dashboard.html`)
 
 ### 4. View your dashboard
 
-Open `usage_dashboard.html` in any web browser.
+Open `index.html` in any web browser.
 
 ## Customization
 
